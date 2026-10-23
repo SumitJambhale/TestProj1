@@ -1,0 +1,16 @@
+{
+  "name": "student-registration-portal",
+  "version": "1.0.0",
+  "description": "A modern single-page student registration form with personal and academic details",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "student-registration",
+    "single-page-form",
+    "academic-details",
+    "personal-details"
+  ],
+  "author": "",
+  "license": "MIT"
+}
