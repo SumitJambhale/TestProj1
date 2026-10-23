@@ -6,11 +6,14 @@ A modern, responsive, and feature-rich Single Page Application (SPA) for student
 
 ## 🌟 Key Features
 
-### 1. Personal Details Section
+### 1. Personal & Parent Details Section (Issue #1)
 - **Student Profile Photo Upload**: Real-time image preview with format and file size checks, with remove action.
-- **Identity Details**: First Name, Middle Name, Last Name, Date of Birth (with age range logic), Gender, Blood Group, Nationality.
-- **Contact & Family**: Validated Email Address, Phone Number, Parent/Guardian Full Name.
-- **Permanent Address**: Street Address, City / District, State / Province, Postal / ZIP Code.
+- **Identity Details**: First Name, Middle Name, Last Name, Date of Birth (with age range logic), Gender, Blood Group, Nationality, Category.
+- **Student Contact & Address**: Validated Email Address, Phone Number, Permanent Street Address, City, State, Postal / ZIP Code.
+- **Parent & Guardian Details (Issue #1)**:
+  - **Father's Profile**: Full Name, Occupation, and Validated Phone Number.
+  - **Mother's Profile**: Full Name, Occupation, and Phone Number.
+  - **Emergency & Financial Preferences**: Primary Emergency Contact selector (Father / Mother / Legal Guardian), Parent Email Address, and Annual Family Income bracket.
 
 ### 2. Academic Details Section
 - **Program Preference**: Target Degree / Course selection (B.Tech CSE, AI & Data Science, BBA, MCA, etc.), Academic Year & Session (Fall/Spring), and Enrollment Mode (Full-Time, Part-Time, Distance).

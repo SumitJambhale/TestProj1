@@ -120,15 +120,6 @@ const ValidationService = {
       this.setFieldState(form.nationality, true);
     }
 
-    // Guardian Name
-    if (!form.guardianName.value.trim()) {
-      this.setFieldState(form.guardianName, false);
-      if (!firstInvalidField) firstInvalidField = form.guardianName;
-      isValid = false;
-    } else {
-      this.setFieldState(form.guardianName, true);
-    }
-
     // Street Address
     if (!form.streetAddress.value.trim()) {
       this.setFieldState(form.streetAddress, false);
@@ -163,6 +154,57 @@ const ValidationService = {
       isValid = false;
     } else {
       this.setFieldState(form.postalCode, true);
+    }
+
+    // ================= PARENT DETAILS VALIDATION (ISSUE #1) =================
+    // Father's Name
+    const fatherNameVal = form.fatherName.value.trim();
+    if (!this.patterns.name.test(fatherNameVal)) {
+      this.setFieldState(form.fatherName, false, "Please enter a valid father's name.");
+      if (!firstInvalidField) firstInvalidField = form.fatherName;
+      isValid = false;
+    } else {
+      this.setFieldState(form.fatherName, true);
+    }
+
+    // Father's Phone
+    const fatherPhoneVal = form.fatherPhone.value.trim();
+    if (!this.patterns.phone.test(fatherPhoneVal) || fatherPhoneVal.replace(/\D/g, '').length < 7) {
+      this.setFieldState(form.fatherPhone, false, "Please enter a valid 10-15 digit phone number.");
+      if (!firstInvalidField) firstInvalidField = form.fatherPhone;
+      isValid = false;
+    } else {
+      this.setFieldState(form.fatherPhone, true);
+    }
+
+    // Mother's Name
+    const motherNameVal = form.motherName.value.trim();
+    if (!this.patterns.name.test(motherNameVal)) {
+      this.setFieldState(form.motherName, false, "Please enter a valid mother's name.");
+      if (!firstInvalidField) firstInvalidField = form.motherName;
+      isValid = false;
+    } else {
+      this.setFieldState(form.motherName, true);
+    }
+
+    // Mother's Phone (Optional, but validate if entered)
+    const motherPhoneVal = form.motherPhone.value.trim();
+    if (motherPhoneVal && (!this.patterns.phone.test(motherPhoneVal) || motherPhoneVal.replace(/\D/g, '').length < 7)) {
+      this.setFieldState(form.motherPhone, false, "Please enter a valid phone number.");
+      if (!firstInvalidField) firstInvalidField = form.motherPhone;
+      isValid = false;
+    } else {
+      this.setFieldState(form.motherPhone, true);
+    }
+
+    // Guardian Email (Optional, but validate if entered)
+    const guardianEmailVal = form.guardianEmail.value.trim();
+    if (guardianEmailVal && !this.patterns.email.test(guardianEmailVal)) {
+      this.setFieldState(form.guardianEmail, false, "Please enter a valid email address.");
+      if (!firstInvalidField) firstInvalidField = form.guardianEmail;
+      isValid = false;
+    } else {
+      this.setFieldState(form.guardianEmail, true);
     }
 
     if (firstInvalidField) {
