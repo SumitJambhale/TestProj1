@@ -683,6 +683,10 @@ textarea.form-control {
   background: #fff;
 }
 
+.review-card-wide {
+  grid-column: 1 / -1;
+}
+
 .review-card-head {
   display: flex;
   justify-content: space-between;

@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Step 3 edit quick-jump buttons
     document.getElementById('editPersonalBtn').addEventListener('click', () => goToStep(1));
+    document.getElementById('editParentBtn').addEventListener('click', () => goToStep(1));
     document.getElementById('editAcademicBtn').addEventListener('click', () => goToStep(2));
     document.getElementById('backToStep2Btn').addEventListener('click', () => goToStep(2));
 
@@ -203,11 +204,22 @@ document.addEventListener('DOMContentLoaded', () => {
         email: form.email.value.trim(),
         phone: form.phone.value.trim(),
         nationality: form.nationality.value.trim(),
-        guardianName: form.guardianName.value.trim(),
+        category: form.religionCategory ? form.religionCategory.value : 'General',
         streetAddress: form.streetAddress.value.trim(),
         city: form.city.value.trim(),
         state: form.state.value.trim(),
         postalCode: form.postalCode.value.trim()
+      },
+      parent: {
+        fatherName: form.fatherName.value.trim(),
+        fatherOccupation: form.fatherOccupation.value.trim(),
+        fatherPhone: form.fatherPhone.value.trim(),
+        motherName: form.motherName.value.trim(),
+        motherOccupation: form.motherOccupation.value.trim(),
+        motherPhone: form.motherPhone.value.trim(),
+        primaryContactPerson: form.primaryContactPerson.value,
+        guardianEmail: form.guardianEmail.value.trim(),
+        familyIncome: form.familyIncome.value
       },
       academic: {
         targetProgram: form.targetProgram.value,
@@ -254,9 +266,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('reviewDob').textContent = data.personal.dob || '-';
     document.getElementById('reviewGender').textContent = data.personal.gender || '-';
     document.getElementById('reviewBloodGroup').textContent = data.personal.bloodGroup || 'Not specified';
-    document.getElementById('reviewNationality').textContent = data.personal.nationality || '-';
-    document.getElementById('reviewGuardian').textContent = data.personal.guardianName || '-';
+    document.getElementById('reviewNationality').textContent = `${data.personal.nationality} (${data.personal.category || 'General'})`;
     document.getElementById('reviewAddress').textContent = `${data.personal.streetAddress}, ${data.personal.city}, ${data.personal.state} - ${data.personal.postalCode}`;
+
+    // Parent DL (Issue #1)
+    document.getElementById('reviewFatherName').textContent = data.parent.fatherName || '-';
+    document.getElementById('reviewFatherContact').textContent = `${data.parent.fatherPhone}${data.parent.fatherOccupation ? ' • ' + data.parent.fatherOccupation : ''}`;
+    document.getElementById('reviewMotherName').textContent = data.parent.motherName || '-';
+    document.getElementById('reviewMotherContact').textContent = `${data.parent.motherPhone || 'N/A'}${data.parent.motherOccupation ? ' • ' + data.parent.motherOccupation : ''}`;
+    document.getElementById('reviewPrimaryContact').textContent = data.parent.primaryContactPerson || 'Father';
+    document.getElementById('reviewGuardianEmailIncome').textContent = `${data.parent.guardianEmail || 'No email provided'} | ${data.parent.familyIncome || 'Income not specified'}`;
 
     // Academic DL
     document.getElementById('reviewProgramSession').textContent = `${data.academic.targetProgram} (${data.academic.academicYear})`;
@@ -368,12 +387,13 @@ document.addEventListener('DOMContentLoaded', () => {
     records.forEach(rec => {
       const tr = document.createElement('tr');
       const fullName = [rec.personal.firstName, rec.personal.lastName].filter(Boolean).join(' ');
+      const parentInfo = rec.parent && rec.parent.fatherName ? `• Father: ${rec.parent.fatherName}` : '';
 
       tr.innerHTML = `
         <td><strong>${escapeHtml(rec.appId)}</strong></td>
         <td>
           <div style="font-weight:600;">${escapeHtml(fullName)}</div>
-          <small style="color:var(--gray-500);">${escapeHtml(rec.personal.gender || '')}</small>
+          <small style="color:var(--gray-500);">${escapeHtml(rec.personal.gender || '')} ${escapeHtml(parentInfo)}</small>
         </td>
         <td>
           <div>${escapeHtml(rec.personal.email)}</div>
@@ -417,7 +437,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const id = (r.appId || '').toLowerCase();
       const course = (r.academic.targetProgram || '').toLowerCase();
       const email = (r.personal.email || '').toLowerCase();
-      return name.includes(q) || id.includes(q) || course.includes(q) || email.includes(q);
+      const father = (r.parent && r.parent.fatherName ? r.parent.fatherName : '').toLowerCase();
+      const mother = (r.parent && r.parent.motherName ? r.parent.motherName : '').toLowerCase();
+      return name.includes(q) || id.includes(q) || course.includes(q) || email.includes(q) || father.includes(q) || mother.includes(q);
     });
     renderSubmissionsTable(filtered);
   }
@@ -457,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function autoSaveCurrentDraft() {
     const data = getFormData();
     // Only save if at least some fields are entered
-    if (data.personal.firstName || data.personal.email || data.academic.prevInstitution) {
+    if (data.personal.firstName || data.personal.email || data.academic.prevInstitution || data.parent.fatherName) {
       StorageService.saveDraft(data);
       draftStatus.querySelector('.text').textContent = 'Draft autosaved';
     }
@@ -479,11 +501,23 @@ document.addEventListener('DOMContentLoaded', () => {
       form.email.value = data.personal.email || '';
       form.phone.value = data.personal.phone || '';
       form.nationality.value = data.personal.nationality || 'Indian';
-      form.guardianName.value = data.personal.guardianName || '';
+      if (form.religionCategory && data.personal.category) form.religionCategory.value = data.personal.category;
       form.streetAddress.value = data.personal.streetAddress || '';
       form.city.value = data.personal.city || '';
       form.state.value = data.personal.state || '';
       form.postalCode.value = data.personal.postalCode || '';
+    }
+
+    if (data.parent) {
+      form.fatherName.value = data.parent.fatherName || '';
+      form.fatherOccupation.value = data.parent.fatherOccupation || '';
+      form.fatherPhone.value = data.parent.fatherPhone || '';
+      form.motherName.value = data.parent.motherName || '';
+      form.motherOccupation.value = data.parent.motherOccupation || '';
+      form.motherPhone.value = data.parent.motherPhone || '';
+      form.primaryContactPerson.value = data.parent.primaryContactPerson || 'Father';
+      form.guardianEmail.value = data.parent.guardianEmail || '';
+      form.familyIncome.value = data.parent.familyIncome || '';
     }
 
     if (data.academic) {
@@ -521,11 +555,22 @@ document.addEventListener('DOMContentLoaded', () => {
     form.email.value = 'rohan.deshmukh@example.com';
     form.phone.value = '+91 9823456780';
     form.nationality.value = 'Indian';
-    form.guardianName.value = 'Kiran Deshmukh';
+    if (form.religionCategory) form.religionCategory.value = 'General';
     form.streetAddress.value = 'Flat 402, Royal Residency, Shivaji Nagar';
     form.city.value = 'Pune';
     form.state.value = 'Maharashtra';
     form.postalCode.value = '411005';
+
+    // Parent Details (Issue #1)
+    form.fatherName.value = 'Ramesh Deshmukh';
+    form.fatherOccupation.value = 'Senior Architect';
+    form.fatherPhone.value = '+91 9822012345';
+    form.motherName.value = 'Sunita Deshmukh';
+    form.motherOccupation.value = 'Associate Professor';
+    form.motherPhone.value = '+91 9822054321';
+    form.primaryContactPerson.value = 'Father';
+    form.guardianEmail.value = 'parents.deshmukh@example.com';
+    form.familyIncome.value = '₹5,00,000 - ₹10,00,000';
 
     form.targetProgram.value = 'B.Tech Computer Science & Engineering';
     form.academicYear.value = '2026-2027';
@@ -541,7 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.academicDeclaration.checked = true;
 
     autoSaveCurrentDraft();
-    showToast('Sample student data filled! You can now test Step 1 & 2 navigation.', 'info');
+    showToast('Sample student & parent data filled! You can now test Step 1 & 2 navigation.', 'info');
   }
 
   // Toast Notification
